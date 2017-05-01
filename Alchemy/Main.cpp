@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 #include <cstdlib>
+#include <algorithm>
+#include <windows.h>
 
 
 //STRUCT QUE NOS SERVIRA PARA CREAR LAS KEYS DEL UNORDERED_MAP
@@ -15,7 +17,13 @@ struct combinations
 };
 
 //ENUM CLASS PARA EL CONTROL DE OPERACIONES
-enum class Instructions{add,basics,remove,info,sort,clean,help };
+enum class Instructions{add,
+						basics,
+						remove,
+						info,
+						sort,
+						clean,
+						help };
 
 
 //FUNCION QUE IMPRIME LAS INSTRUCCIONES
@@ -34,23 +42,24 @@ void printInstructions()
 			"- Enter the word 'help' to show this tutorial." << std::endl;
 }
 
-Instructions castToEnum(std::string word)
+//FUNCION QUE CASTEA DE STRING A ENUM PARA PODER HACER EL SWITCH(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
+int castToEnum(std::string word)
 {
-	Instructions casted;
+	int casted;
 	if (word == "add")
-		casted = Instructions::add;
+		casted = 0;
 	if (word == "basics")
-		casted = Instructions::basics;
+		casted = 1;
 	if (word == "remove")
-		casted = Instructions::remove;
+		casted = 2;
 	if (word == "info")
-		casted = Instructions::info;
+		casted = 3;
 	if (word == "sort")
-		casted = Instructions::sort;
+		casted = 4;
 	if (word == "clean")
-		casted = Instructions::clean;
+		casted = 5;
 	if (word == "help")
-		casted = Instructions::help;
+		casted = 6;
 	
 
 
@@ -86,7 +95,7 @@ void fillListOfElements(std::unordered_map<std::string, std::string> elementsLis
 			equalPosition = line.find("=");
 			plusPosition = line.find('+');
 			sizeKey1 = (plusPosition - equalPosition) - 3;
-			//SEPARAMOS LA LINEA POR LOS SIMBOLOS ANTES DICHOS
+			//SEPARAMOS LA LINEA POR LOS SIMBOLOS ANTES NOMBRADOS
 			value = line.substr(0, equalPosition - 1);
 			key1 = line.substr(equalPosition + 2, sizeKey1);
 			key2 = line.substr(plusPosition + 2, line.size());
@@ -118,50 +127,113 @@ void main()
 
 	std::vector<std::string> gameList({ "Air","Earth","Fire","Water" });
 	std::vector<std::string> scoreList(gameList);
-	
+
 	//VARIABLE QUE CONTROLA LA PUNTUACION
 	int score = 0;
 	//LA PRIMERA Y SEGUNDA PALABRA QUE NOS ESCRIBA EL USUARIO
 	std::string firstWord;
 	std::string secondWord;
 	//EL ENUM CON EL QUE RECORREREMOS EL SWITCH 
-	Instructions order;
+	int order;
 
 	while (score <= 395)
 	{
+		std::cout << "SCORE: " << score << "\n" << std::endl;
+		//IMPRIMIMOS LA LISTA QUE TIENE EL JUGADOR CON LOS ELEMENTOS
+		//(LA DE JUEGO NO LA QUE TIENE TODOS LOS QUE HA CONSEGUIDO)
+		for (int i = 0; i < gameList.size(); i++)
+		{
+			std::cout << i + 1 << ". " << gameList[i] << std::endl;
+		}
 		//GUARDAMOS LOS COMANDOS ELEGIOS POR EL USUARIO
 		std::cin >> firstWord >> secondWord;
+
+		//NOS LO DA EL ENUNCIADO PARA LIMPIAR Y EVITAR POSIBLES ERRORES
+		std::cin.clear(); // clears all error state flags						  
+		std::cin.ignore(std::cin.rdbuf()->in_avail());// extracts characters from the input buffer and discards them
+
+
 		//PARA PODER HACER EL SWITCH HACEMOS UN CAST DE STRING A NUESTRO ENUM DE ORDENES
-		//CON UNA FUNCION PREVIAMENT CREADA
+		//CON UNA FUNCION PREVIAMENT CREADA(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
 		order = castToEnum(firstWord);
 
 		switch (order)
 		{
-		case Instructions::add:
+		//ADD
+		case 0:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+
+			if (secondWord == "basics")
+			{
+				gameList.push_back(scoreList[0]);
+				gameList.push_back(scoreList[1]);
+				gameList.push_back(scoreList[2]);
+				gameList.push_back(scoreList[3]);
+			}
+			else
+			{
+				
+				int number = atoi(secondWord.c_str());
+				gameList.push_back(gameList[number-1]);
+			}
+			break;
+
+		//REMOVE
+		case 2:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+
+			std::cout << firstWord << std::endl;
+			break;
+
+		//INFO
+		case 3:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+
+			//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
+			//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
+			int number = atoi(secondWord.c_str());
+			std::string reference = gameList[number - 1];
+
+			//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
+			std::string urlBase = "https://en.wikipedia.org/wiki/";
+			std::string finalUrl = urlBase + reference ;
+			//char url[100]{ finalUrl.c_str() };
+			//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
+			//ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
+			break;
+
+		//SORT
+		case 4:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
 			
 			break;
-		case Instructions::remove:
 
-			break;
-		case Instructions::info:
+		//CLEAN
+		case 5:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
 
+			std::cout << firstWord << std::endl;
 			break;
-		case Instructions::sort:
 
+		//HELP
+		case 6:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+			printInstructions();
+			std::cout << firstWord << std::endl;
 			break;
-		case Instructions::clean:
 
-			break;
-		case Instructions::help:
-
-			break;
+		//POR DEFECTO EN ESTE CASO SERA CUANDO EL USUARIO NOS DE DOS ELEMENTOS QUE COMBINAR
 		default:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+
 			break;
-		}
-		std::cout << firstWord << " " << secondWord << std::endl;
-		score++;
-
+		}		
 	}
- 
-
 }
