@@ -156,6 +156,7 @@ void main()
 		//PARA PODER HACER EL SWITCH HACEMOS UN CAST DE STRING A NUESTRO ENUM DE ORDENES
 		//CON UNA FUNCION PREVIAMENT CREADA(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
 		order = castToEnum(firstWord);
+		int number;
 
 		switch (order)
 		{
@@ -174,7 +175,7 @@ void main()
 			else
 			{
 				
-				int number = atoi(secondWord.c_str());
+				number = atoi(secondWord.c_str());
 				gameList.push_back(gameList[number-1]);
 			}
 			break;
@@ -184,17 +185,19 @@ void main()
 			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
 			system("cls");
 
-			std::cout << firstWord << std::endl;
+			number = atoi(secondWord.c_str());
+			gameList.erase(gameList.begin()+(number-1));			
 			break;
 
 		//INFO
 		case 3:
+			/*
 			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
 			system("cls");
 
 			//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
 			//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
-			int number = atoi(secondWord.c_str());
+			number = atoi(secondWord.c_str());
 			std::string reference = gameList[number - 1];
 
 			//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
@@ -203,8 +206,8 @@ void main()
 			//char url[100]{ finalUrl.c_str() };
 			//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
 			//ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
-			break;
-
+			*/break;
+			
 		//SORT
 		case 4:
 			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
