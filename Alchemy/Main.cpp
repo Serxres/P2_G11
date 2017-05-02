@@ -8,6 +8,17 @@
 #include <algorithm>
 #include <windows.h>
 
+template<>
+struct std::hash<std::pair<std::string, std::string>>
+{
+	size_t operator()(const std::pair<std::string, std::string> &p) const
+	{
+
+		return ((hash<std::string>()(p.first)
+			^ (hash<std::string>()(p.second) << 1)) >> 1);
+	}
+};
+
 
 //STRUCT QUE NOS SERVIRA PARA CREAR LAS KEYS DEL UNORDERED_MAP
 struct combinations
@@ -37,9 +48,9 @@ void printInstructions()
 			"- Enter 'add basics' to add new instances of the 4 basic elemtns.\n" <<
 			"- Enter the word 'remove' and the number of an element to erase it from your list.\n" <<
 			"- Enter the word 'info' and the number of an element to get the information about it in the explorer.\n" <<
-			"- Enter the word 'sort' to sort by alphabetical order the elements in the list.\n" <<
-			"- Enter the word 'clean' to delete all the instances of repeated elements.\n" <<
-			"- Enter the word 'help' to show this tutorial." << std::endl;
+			"- Enter the word 'sort list' to sort by alphabetical order the elements in the list.\n" <<
+			"- Enter the word 'clean list' to delete all the instances of repeated elements.\n" <<
+			"- Enter the word 'help me' to show this tutorial." << std::endl;
 }
 
 //FUNCION QUE CASTEA DE STRING A ENUM PARA PODER HACER EL SWITCH(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
@@ -66,7 +77,6 @@ int castToEnum(std::string word)
 		return casted;
 };
 //FUNCION QUE GUARDA TODA LA LISTA DE ELEMENTOS EN UN UNORDERED_MAP
-/*
 void fillListOfElements(std::unordered_map<std::string, std::string> elementsList)
 { 
 
@@ -76,7 +86,7 @@ void fillListOfElements(std::unordered_map<std::string, std::string> elementsLis
 
 	
 	//COMPROBAMOS SI EL ARCHIVO SE HA ABIERTO CORRECTAMENTE
-	if (elements.is_open() == true)
+	if (elements.is_open() )
 	{
 		size_t equalPosition;
 		size_t plusPosition;
@@ -114,14 +124,15 @@ void fillListOfElements(std::unordered_map<std::string, std::string> elementsLis
 	}
 
 	elements.close();
-}*/
+}
 
 
 void main()
 {
+	
 	//printInstructions();
 
-	std::unordered_map<std::string, std::string> elementsList;
+	std::unordered_map<std::pair <std::string,std::string>, std::string> elementsList;
 
 	//fillListOfElements(elementsList);
 
@@ -160,83 +171,83 @@ void main()
 
 		switch (order)
 		{
-		//ADD
-		case 0:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
+				//ADD
+				case 0:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 
-			if (secondWord == "basics")
-			{
-				gameList.push_back(scoreList[0]);
-				gameList.push_back(scoreList[1]);
-				gameList.push_back(scoreList[2]);
-				gameList.push_back(scoreList[3]);
-			}
-			else
-			{
+					if (secondWord == "basics")
+					{
+						gameList.push_back(scoreList[0]);
+						gameList.push_back(scoreList[1]);
+						gameList.push_back(scoreList[2]);
+						gameList.push_back(scoreList[3]);
+					}
+					else
+					{
 				
-				number = atoi(secondWord.c_str());
-				gameList.push_back(gameList[number-1]);
-			}
-			break;
+						number = atoi(secondWord.c_str());
+						gameList.push_back(gameList[number-1]);
+					}
+					break;
 
-		//REMOVE
-		case 2:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
+				//REMOVE
+				case 2:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 
-			number = atoi(secondWord.c_str());
-			gameList.erase(gameList.begin()+(number-1));			
-			break;
+					number = atoi(secondWord.c_str());
+					gameList.erase(gameList.begin()+(number-1));			
+					break;
 
-		//INFO
-		case 3:
-			/*
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
+				//INFO
+				case 3: {
 
-			//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
-			//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
-			number = atoi(secondWord.c_str());
-			std::string reference = gameList[number - 1];
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 
-			//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
-			std::string urlBase = "https://en.wikipedia.org/wiki/";
-			std::string finalUrl = urlBase + reference ;
-			//char url[100]{ finalUrl.c_str() };
-			//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
-			//ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
-			*/break;
+					//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
+					//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
+					number = atoi(secondWord.c_str());
+					std::string reference = gameList[number - 1];
+
+					//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
+					std::string urlBase = "https://en.wikipedia.org/wiki/";
+					std::string finalUrl = urlBase + reference;
+
+					//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
+					ShellExecuteA(nullptr, "open", finalUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+					break;
+				}
+				//SORT
+				case 4:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 			
-		//SORT
-		case 4:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
-			
-			break;
+					break;
 
-		//CLEAN
-		case 5:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
+				//CLEAN
+				case 5:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 
-			std::cout << firstWord << std::endl;
-			break;
+					std::cout << firstWord << std::endl;
+					break;
 
-		//HELP
-		case 6:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
-			printInstructions();
-			std::cout << firstWord << std::endl;
-			break;
+				//HELP
+				case 6:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
+					printInstructions();
+					std::cout << firstWord << std::endl;
+					break;
 
-		//POR DEFECTO EN ESTE CASO SERA CUANDO EL USUARIO NOS DE DOS ELEMENTOS QUE COMBINAR
-		default:
-			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-			system("cls");
+				//POR DEFECTO EN ESTE CASO SERA CUANDO EL USUARIO NOS DE DOS ELEMENTOS QUE COMBINAR
+				default:
+					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+					system("cls");
 
-			break;
+					break;
 		}		
 	}
 }
