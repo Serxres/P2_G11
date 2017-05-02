@@ -56,7 +56,7 @@ void printInstructions()
 //FUNCION QUE CASTEA DE STRING A ENUM PARA PODER HACER EL SWITCH(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
 int castToEnum(std::string word)
 {
-	int casted;
+	int casted =999;
 	if (word == "add")
 		casted = 0;
 	if (word == "basics")
@@ -76,8 +76,9 @@ int castToEnum(std::string word)
 
 		return casted;
 };
+
 //FUNCION QUE GUARDA TODA LA LISTA DE ELEMENTOS EN UN UNORDERED_MAP
-void fillListOfElements(std::unordered_map<std::string, std::string> elementsList)
+void fillListOfElements(std::unordered_map<std::pair <std::string, std::string>, std::string> elementsList)
 { 
 
 	std::ifstream elements("elements.dat");
@@ -112,7 +113,9 @@ void fillListOfElements(std::unordered_map<std::string, std::string> elementsLis
 			//GENERAMOS LA KEY QUE SERA LOS DOS ELEMENTOS DE LA COMBINACION EN UN STRING
 			keyTotal = key1 + key2;
 			//LO GUARDAMOS EN NUESTRO UNORDERD_MAP
-			elementsList.insert(keyTotal, value);
+			
+			//elementsList.insert(std::make_pair<std::string,std::string>(key1,key2), value);
+			
 			
 
 
@@ -130,14 +133,15 @@ void fillListOfElements(std::unordered_map<std::string, std::string> elementsLis
 void main()
 {
 	
-	//printInstructions();
+	printInstructions();
 
 	std::unordered_map<std::pair <std::string,std::string>, std::string> elementsList;
 
-	//fillListOfElements(elementsList);
+	fillListOfElements(elementsList);
 
 	std::vector<std::string> gameList({ "Air","Earth","Fire","Water" });
 	std::vector<std::string> scoreList(gameList);
+	std::vector<std::string> auxList(390);
 
 	//VARIABLE QUE CONTROLA LA PUNTUACION
 	int score = 0;
@@ -220,11 +224,11 @@ void main()
 					break;
 				}
 				//SORT
-				case 4:
+				case 4:/*
 					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
 					system("cls");
-			
-					break;
+					std::sort(gameList,auxList);
+					break;*/
 
 				//CLEAN
 				case 5:
