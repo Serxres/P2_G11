@@ -28,40 +28,44 @@ struct combinations
 };
 
 //ENUM CLASS PARA EL CONTROL DE OPERACIONES
-enum class Instructions{add,
-						basics,
-						remove,
-						info,
-						sort,
-						clean,
-						help };
+enum class Instructions {
+	add,
+	basics,
+	remove,
+	info,
+	sort,
+	clean,
+	help
+};
 
 
 //FUNCION QUE IMPRIME LAS INSTRUCCIONES
 void printInstructions()
 {
 	std::cout << "//////////////////" << "\n"
-			<< "TEAM ANCIA ALCHEMY\n" <<
-			"//////////////////" << "\n" << "\n" <<
-			"- Enter two number of your elemtns list to combine them.\n" <<
-			"- Enter the word 'add' and a number of an element to add a new instance of that element\n" <<
-			"- Enter 'add basics' to add new instances of the 4 basic elemtns.\n" <<
-			"- Enter the word 'remove' and the number of an element to erase it from your list.\n" <<
-			"- Enter the word 'info' and the number of an element to get the information about it in the explorer.\n" <<
-			"- Enter the words 'sort list' to sort by alphabetical order the elements in the list.\n" <<
-			"- Enter the words 'clean list' to delete all the instances of repeated elements.\n" <<
-			"- Enter the words 'help me' to show this tutorial." << std::endl;
+		<< "TEAM ANCIA ALCHEMY\n" <<
+		"//////////////////" << "\n" << "\n" <<
+		"- Enter two number of your elemtns list to combine them.\n" <<
+		"- Enter the word 'add' and a number of an element to add a new instance of that element\n" <<
+		"- Enter 'add basics' to add new instances of the 4 basic elemtns.\n" <<
+		"- Enter the word 'remove' and the number of an element to erase it from your list.\n" <<
+		"- Enter the word 'info' and the number of an element to get the information about it in the explorer.\n" <<
+		"- Enter the word 'sort' to sort by alphabetical order the elements in the list.\n" <<
+		"- Enter the word 'clean' to delete all the instances of repeated elements.\n" <<
+		"- Enter the word 'help' to show this tutorial." << std::endl;
 }
 
 //FUNCION QUE CASTEA DE STRING A ENUM PARA PODER HACER EL SWITCH(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
-int castToEnum(std::string word)
+int castToEnum(std::string word, std::vector<std::string> &myVector)
 {
-	int casted = 999;
+	int number = atoi(word.c_str());
+
+	int casted = 8;
 	if (word == "add")
 		casted = 0;
 	if (word == "basics")
 		casted = 1;
-	if (word == "remove")
+	if (word == "delete")
 		casted = 2;
 	if (word == "info")
 		casted = 3;
@@ -71,23 +75,27 @@ int castToEnum(std::string word)
 		casted = 5;
 	if (word == "help")
 		casted = 6;
-	
+	if (number > myVector.size() && word != "add" && word != "basics" && word != "delete" && word != "info" && word != "sort" && word != "clean" && word != "help")
+	{
+		casted = 7;
+	}
 
 
-		return casted;
+
+	return casted;
 };
 
 //FUNCION QUE GUARDA TODA LA LISTA DE ELEMENTOS EN UN UNORDERED_MAP
 void fillListOfElements(std::unordered_map<std::pair <std::string, std::string>, std::string> &elementsList)
-{ 
+{
 
 	std::ifstream elements("elements.dat");
 	//STRING DONDE GUARDAREMOS CADA LINEA PARA DESPUES UTILZARLA
 	std::string line;
 
-	
+
 	//COMPROBAMOS SI EL ARCHIVO SE HA ABIERTO CORRECTAMENTE
-	if (elements.is_open() )
+	if (elements.is_open())
 	{
 		size_t equalPosition;
 		size_t plusPosition;
@@ -96,7 +104,7 @@ void fillListOfElements(std::unordered_map<std::pair <std::string, std::string>,
 		std::string key2;
 		std::string keyTotal;
 		std::string value;
- 
+
 		//QUE VAYA LEYENDO MIENTRAS NO SE LLEGUE AL FINAL DEL ARCHIVO
 		while (elements.eof() != true)
 		{
@@ -113,9 +121,9 @@ void fillListOfElements(std::unordered_map<std::pair <std::string, std::string>,
 			//GENERAMOS LA KEY QUE SERA LOS DOS ELEMENTOS DE LA COMBINACION EN UN STRING
 			keyTotal = key1 + key2;
 			//LO GUARDAMOS EN NUESTRO UNORDERD_MAP
-			std::pair<std::string, std::string> myKey (key1, key2);
-			elementsList.insert({myKey,value});
-			
+			std::pair<std::string, std::string> myKey(key1, key2);
+			elementsList.insert({ myKey,value });
+
 		}
 	}
 	else
@@ -129,16 +137,13 @@ void fillListOfElements(std::unordered_map<std::pair <std::string, std::string>,
 
 void main()
 {
-	
+
 	printInstructions();
 
-	std::unordered_map<std::pair <std::string,std::string>, std::string> elementsList;
+	std::unordered_map<std::pair <std::string, std::string>, std::string> elementsList;
 
 	fillListOfElements(elementsList);
-	
-	
 
-	
 	//std::cout<< elementsList[myAuxKey] <<std::endl;
 
 
@@ -146,7 +151,7 @@ void main()
 	//ES DONDE NOS GUARDAMOS LOS LOGROS DEL JUGADOR
 	std::vector<std::string> scoreList(gameList);
 	std::vector<std::string> auxList(390);
-	
+
 
 	//VARIABLE QUE CONTROLA LA PUNTUACION
 	int score = 0;
@@ -156,8 +161,10 @@ void main()
 	//EL ENUM CON EL QUE RECORREREMOS EL SWITCH 
 	int order;
 
+	//COMIENZA EL GAME LOOP
 	while (score <= 395)
 	{
+		int aux;
 		std::cout << "SCORE: " << score << "\n" << std::endl;
 		//IMPRIMIMOS LA LISTA QUE TIENE EL JUGADOR CON LOS ELEMENTOS
 		//(LA DE JUEGO NO LA QUE TIENE TODOS LOS QUE HA CONSEGUIDO)
@@ -165,192 +172,247 @@ void main()
 		{
 			std::cout << i + 1 << ". " << gameList[i] << std::endl;
 		}
-		
+
 		//GUARDAMOS LOS COMANDOS ELEGIOS POR EL USUARIO
-		std::cin >> firstWord >> secondWord;
+		std::cin >> firstWord;
+
+		if (firstWord == "add")std::cin >> secondWord;
+		if (firstWord == "delete")std::cin >> secondWord;
+		if (firstWord == "info")std::cin >> secondWord;
+		if (firstWord != "add" &&  firstWord != "delete" && firstWord != "info" && firstWord != "sort" &&
+			firstWord != "clean" && firstWord != "help" && atoi(firstWord.c_str()) <= gameList.size() && atoi(firstWord.c_str()) > 0) std::cin >> secondWord;
+
+
 
 		//NOS LO DA EL ENUNCIADO PARA LIMPIAR Y EVITAR POSIBLES ERRORES
 		std::cin.clear(); // clears all error state flags						  
 		std::cin.ignore(std::cin.rdbuf()->in_avail());// extracts characters from the input buffer and discards them
 
 
-		//PARA PODER HACER EL SWITCH HACEMOS UN CAST DE STRING A NUESTRO ENUM DE ORDENES
-		//CON UNA FUNCION PREVIAMENT CREADA(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
-		order = castToEnum(firstWord);
+													  //PARA PODER HACER EL SWITCH HACEMOS UN CAST DE STRING A NUESTRO ENUM DE ORDENES
+													  //CON UNA FUNCION PREVIAMENT CREADA(CAMBIO A INT PORQUE DABA PROBLEMAS EN EL CAST CON EL ENUM)
+		order = castToEnum(firstWord, gameList);
 		int number;
 		int number2;
 		std::string firstKey;
 		std::string secondKey;
 
-		
+
 		switch (order)
 		{
-				//ADD
-				case 0:
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
+			//ADD
+		case 0:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
 
-					if (secondWord == "basics")
-					{
-						gameList.push_back(scoreList[0]);
-						gameList.push_back(scoreList[1]);
-						gameList.push_back(scoreList[2]);
-						gameList.push_back(scoreList[3]);
-						
-					}
-					else
-					{
-				
-						number = atoi(secondWord.c_str());
-						gameList.push_back(gameList[number-1]);
-					}
-					break;
+			if (secondWord == "basics")
+			{
+				gameList.push_back(scoreList[0]);
+				gameList.push_back(scoreList[1]);
+				gameList.push_back(scoreList[2]);
+				gameList.push_back(scoreList[3]);
+				break;
 
-				//REMOVE
-				case 2:
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
+			}
+			if (atoi(secondWord.c_str()) <= gameList.size() && atoi(secondWord.c_str()) > 0)
+			{
+				number = atoi(secondWord.c_str());
+				gameList.push_back(gameList[number - 1]);
+				break;
+			}
+			if (atoi(secondWord.c_str()) > gameList.size() || atoi(secondWord.c_str()) <= 0)
+			{
+				std::cout << "This element or order doesen't exist!! Try again." << std::endl;
+				system("pause");
+				break;
+			}
 
-					number = atoi(secondWord.c_str());
-					gameList.erase(gameList.begin()+(number-1));			
-					break;
 
-				//INFO
-				case 3: {
 
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
 
-					//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
-					//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
-					number = atoi(secondWord.c_str());
-					std::string reference = gameList[number - 1];
+			//DELETE
+		case 2:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
 
-					//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
-					std::string urlBase = "https://en.wikipedia.org/wiki/";
-					std::string finalUrl = urlBase + reference;
+			number = atoi(secondWord.c_str());
+			if (number > 0 && number <= gameList.size())
+			{
+				gameList.erase(gameList.begin() + (number - 1));
+			}
+			else
+			{
+				std::cout << "This element doesen't exist yet!! Try again." << std::endl;
+				system("pause");
+				break;
+			}
 
-					//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
-					ShellExecuteA(nullptr, "open", finalUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
-					break;
-				}
+			break;
+
+			//INFO
+		case 3: {
+
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+
+			//CONVERTIMOS EL NUMERO DE STRING A INT PARA PODER ACCEDER AL UNORERED_MAP 
+			//E IR A BUSCAR EL ELEMENTO EN STRING Y AÑADIRLO A LA URL
+			number = atoi(secondWord.c_str());
+
+			//COMPORBAMOS SIN EL JUGADOR NOS DICE UN NUMERO DE LA LISTA QUE NO EXISTE AUN
+			if (number > gameList.size() || number <= 0)
+			{
+				std::cout << "This element doesen't exist yet!! Try again." << std::endl;
+				system("pause");
+			}
+			else
+			{
+				std::string reference = gameList[number - 1];
+				//TENEMOS LA URL BASICA Y LE AÑADIMOS LA PALABRA EL ELMEMENTO DEL QUE QUEREMOS SABER INFORMACION
+				std::string urlBase = "https://en.wikipedia.org/wiki/";
+				std::string finalUrl = urlBase + reference;
+
+				//AQUI CON ESTA FUNCION DADA EN EL ENUNCIADO ABRIMOS EL EXPLORADOR POR LA PAGINA DEL ELEMENTO
+				ShellExecuteA(nullptr, "open", finalUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+				break;
+			}
+		}
 				//SORT
-				case 4: {
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
-					
-					std::sort(gameList.begin(), gameList.end());
-					/*gameList.clear();
-					for (int i = 0; i < auxList.size(); i++)
-					{
-						gameList[i] = auxList[i];
-					}*/
-					break;
+		case 4: {
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
 
-				}
+			std::sort(gameList.begin(), gameList.end());
+			/*gameList.clear();
+			for (int i = 0; i < auxList.size(); i++)
+			{
+			gameList[i] = auxList[i];
+			}*/
+			break;
+
+		}
 				//CLEAN
-				case 5: {
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
-					bool equal = false;
-					int counter;
-					do {
-						counter = 0;
-						for (int i = 0; i < gameList.size(); i++)
+		case 5: {
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+			bool equal = false;
+			int counter;
+			do {
+				counter = 0;
+				for (int i = 0; i < gameList.size(); i++)
+				{
+					for (int j = i + 1; j < gameList.size(); j++)
+					{
+
+						if (gameList[i] == gameList[j])
 						{
-							for (int j = i + 1; j < gameList.size(); j++)
+							gameList.erase(gameList.begin() + j);
+							counter++;
+							if (j + 1 >= gameList.size())
 							{
-
-								if (gameList[i] == gameList[j])
-								{
-									gameList.erase(gameList.begin() + j);
-									counter++;
-									if (j + 1 >= gameList.size())
-									{
-										break;
-									}
-								}
-								if (i + 1 >= gameList.size())
-								{
-									break;
-								}
-
+								break;
 							}
 						}
-					}while(counter != 0);
-					break;
+						if (i + 1 >= gameList.size())
+						{
+							break;
+						}
 
+					}
 				}
+			} while (counter != 0);
+			break;
+
+		}
 
 				//HELP
-				case 6:
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
-					printInstructions();
-					std::cout << firstWord << std::endl;
-					break;
+		case 6:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+			printInstructions();
+			std::cout << firstWord << std::endl;
+			break;
 
-				//POR DEFECTO EN ESTE CASO SERA CUANDO EL USUARIO NOS DE DOS ELEMENTOS QUE COMBINAR
-				default:
-					//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
-					system("cls");
-					if (firstWord == secondWord)
+			//PALABRA ERRONEA
+		case 7:
+			system("cls");
+			std::cout << "This command thoesen't exist!! Try again." << std::endl;
+			system("pause");
+
+			break;
+
+			//POR DEFECTO EN ESTE CASO SERA CUANDO EL USUARIO NOS DE DOS ELEMENTOS QUE COMBINAR
+		default:
+			//LIMPIAMOS LA PANTALLA PORQUE HABRÁ ALGUN CAMBIO
+			system("cls");
+			if (firstWord == secondWord)
+			{
+				break;
+			}
+
+			number = atoi(firstWord.c_str());
+			number2 = atoi(secondWord.c_str());
+
+			if (number > gameList.size() || number2 > gameList.size() || number <= 0 || number2 <= 0)
+			{
+				std::cout << "One or two of this elements doesen't exist yet!! Try again." << std::endl;
+				system("pause");
+				break;
+			}
+			else
+			{
+				firstKey = gameList[number - 1];
+				secondKey = gameList[number2 - 1];
+
+				std::pair<std::string, std::string> myAuxKey(firstKey, secondKey);
+				if (elementsList.count(myAuxKey) == 1)
+				{
+					gameList.push_back(elementsList[myAuxKey]);
+
+					int counter = 0;
+					for (int i = 0; i < scoreList.size(); i++)
 					{
-						break;
+						if (scoreList[i] == elementsList[myAuxKey])
+						{
+							counter++;
+							break;
+						}
 					}
-					number = atoi(firstWord.c_str());
-					number2 = atoi(secondWord.c_str());
-					firstKey = gameList[number - 1];
-					secondKey = gameList[number2 - 1];
-					
-					std::pair<std::string, std::string> myAuxKey(firstKey, secondKey);
+
+					if (counter == 0)
+					{
+						scoreList.push_back(elementsList[myAuxKey]);
+						score++;
+					}
+
+				}
+				else if (elementsList.count(myAuxKey) == 0)
+				{
+					std::pair<std::string, std::string> myAuxKey(secondKey, firstKey);
 					if (elementsList.count(myAuxKey) == 1)
 					{
 						gameList.push_back(elementsList[myAuxKey]);
 
 						int counter = 0;
 						for (int i = 0; i < scoreList.size(); i++)
+						{
+							if (scoreList[i] == elementsList[myAuxKey])
 							{
-								if (scoreList[i] == elementsList[myAuxKey])
-								{
-									counter++;
-									break;
-								}
+								counter++;
+								break;
 							}
+						}
 
 						if (counter == 0)
 						{
 							scoreList.push_back(elementsList[myAuxKey]);
 							score++;
 						}
-						
+
 					}
-					else if (elementsList.count(myAuxKey) == 0)
-					{
-						std::pair<std::string, std::string> myAuxKey(secondKey, firstKey);
-						if (elementsList.count(myAuxKey) == 1)
-						{
-							gameList.push_back(elementsList[myAuxKey]);
-
-							int counter = 0;
-							for (int i = 0; i < scoreList.size(); i++)
-							{
-								if (scoreList[i] == elementsList[myAuxKey])
-								{
-									counter++;
-									break;
-								}
-							}
-
-							if (counter == 0)
-							{
-								scoreList.push_back(elementsList[myAuxKey]);
-								score++;
-							}
-
-						}
-					}
-					break;
-		}		
+				}
+				break;
+			}
+		}
 	}
 }
